@@ -100,7 +100,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>stream.flarebot.flarebot.FlareBot</mainClass>
+                            <mainClass>io.github.binaryoverload.CookieBot</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>

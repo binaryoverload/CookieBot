@@ -6,14 +6,14 @@
         </encoder>
     </appender>
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-        <filter class="stream.flarebot.flarebot.util.errorhandling.Filter" />
-        <filter class="stream.flarebot.flarebot.util.errorhandling.ErrorCatcher" />
+        <filter class="io.github.binaryoverload.util.errorhandling.Filter" />
+        <filter class="io.github.binaryoverload.util.errorhandling.ErrorCatcher" />
         <encoder>
             <pattern>[%d{yyyy.MM.dd HH:mm:ss}] [%t] [%level] %msg%n</pattern>
         </encoder>
     </appender>
     <appender name="Sentry" class="io.sentry.logback.SentryAppender">
-        <filter class="stream.flarebot.flarebot.util.errorhandling.Filter" />
+        <filter class="io.github.binaryoverload.util.errorhandling.Filter" />
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
             <level>WARN</level>
         </filter>
@@ -26,6 +26,6 @@
     <logger name="org.apache" level="NONE" />
     <logger name="com.sedmelluq.*" level="INFO" />
     <logger name="httpclient" level="NONE" />
-    <logger name="stream.flarebot.flarebot.FlareBot" level="INFO" />
+    <logger name="io.github.binaryoverload.CookieBot" level="INFO" />
     <logger name="Redis-*" level="NONE" />
 </configuration>
