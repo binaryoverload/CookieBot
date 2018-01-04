@@ -6,15 +6,14 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.github.binaryoverload.commands.Command;
-import io.github.binaryoverload.commands.CommandType;
-import io.github.binaryoverload.commands.general.StatsCommand;
+import io.github.binaryoverload.commands.CommandAuthority;
 import io.github.binaryoverload.commands.secret.EvalCommand;
 import io.github.binaryoverload.commands.secret.LogsCommand;
-import io.github.binaryoverload.commands.secret.UpdateCommand;
+import io.github.binaryoverload.commands.secret.QuitCommand;
 import io.github.binaryoverload.database.CassandraController;
-import io.github.binaryoverload.permissions.PerGuildPermissions;
 import io.github.binaryoverload.scheduler.Scheduler;
 import io.github.binaryoverload.util.Constants;
+import io.github.binaryoverload.util.GeneralUtils;
 import io.github.binaryoverload.util.MessageUtils;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
@@ -28,10 +27,6 @@ import net.dv8tion.jda.webhook.WebhookClient;
 import net.dv8tion.jda.webhook.WebhookClientBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import io.github.binaryoverload.commands.general.InfoCommand;
-import io.github.binaryoverload.commands.secret.QuitCommand;
-import io.github.binaryoverload.util.GeneralUtils;
-import stream.flarebot.flarebot.util.objects.ConcurrentSet;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -42,6 +37,7 @@ import java.io.PrintStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -59,7 +55,6 @@ public class CookieBot {
 
     private static final Map<String, Logger> LOGGERS;
     public static final Logger LOGGER;
-    public static final char COMMAND_CHAR = '_';
     private static boolean testBot;
 
     static {
@@ -81,7 +76,7 @@ public class CookieBot {
     private String version = null;
     private JDA client;
 
-    private Set<Command> commands = new ConcurrentSet<>();
+    private Set<Command> commands = Collections.newSetFromMap(new ConcurrentHashMap<Command, Boolean>());
     private long startTime;
 
     public static void main(String[] args) {
@@ -194,7 +189,6 @@ public class CookieBot {
 
         registerCommand(new InfoCommand());
         registerCommand(new QuitCommand());
-        registerCommand(new UpdateCommand());
         registerCommand(new LogsCommand());
         registerCommand(new EvalCommand());
         registerCommand(new StatsCommand());
@@ -219,14 +213,14 @@ public class CookieBot {
         return client;
     }
 
-	public SelfUser getSelfUser() {
+    public SelfUser getSelfUser() {
         return getClient().getSelfUser();
     }
 
     private Runtime runtime = Runtime.getRuntime();
 
-    public void quit(boolean update) {
-            LOGGER.info("Exiting.");
+    public void quit() {
+        LOGGER.info("Exiting.");
         stop();
         System.exit(0);
     }
@@ -239,7 +233,7 @@ public class CookieBot {
         for (ScheduledFuture<?> scheduledFuture : Scheduler.getTasks().values())
             scheduledFuture.cancel(false); // No tasks in theory should block this or cause issues. We'll see
         LOGGER.info("Finished saving!");
-            client.shutdown();
+        client.shutdown();
     }
 
     private void registerCommand(Command command) {
@@ -249,8 +243,8 @@ public class CookieBot {
     // https://bots.are-pretty.sexy/214501.png
     // New way to process commands, this way has been proven to be quicker overall.
     public Command getCommand(String s, User user) {
-        if(PerGuildPermissions.isCreator(user)) {
-            for (Command cmd : getCommandsByType(CommandType.SECRET)) {
+        if (CommandAuthority.ADMIN.hasPerm(user)) {
+            for (Command cmd : getCommandsByAuthority(CommandAuthority.ADMIN)) {
                 if (cmd.getCommand().equalsIgnoreCase(s))
                     return cmd;
                 for (String alias : cmd.getAliases())
@@ -258,7 +252,7 @@ public class CookieBot {
             }
         }
         for (Command cmd : getCommands()) {
-            if (cmd.getType() == CommandType.SECRET) continue;
+            if (cmd.getAuthority() == CommandAuthority.ADMIN) continue;
             if (cmd.getCommand().equalsIgnoreCase(s))
                 return cmd;
             for (String alias : cmd.getAliases())
@@ -271,8 +265,8 @@ public class CookieBot {
         return this.commands;
     }
 
-    public Set<Command> getCommandsByType(CommandType type) {
-        return commands.stream().filter(command -> command.getType() == type).collect(Collectors.toSet());
+    public Set<Command> getCommandsByAuthority(CommandAuthority authority) {
+        return commands.stream().filter(command -> command.getAuthority() == authority).collect(Collectors.toSet());
     }
 
     public static CookieBot getInstance() {
@@ -378,7 +372,7 @@ public class CookieBot {
         return client.getTextChannelById(channelId);
     }
 
-    private Guild getGuildById(String guildId) {
+    public Guild getGuildById(String guildId) {
         return client.getGuildById(guildId);
     }
 
@@ -401,7 +395,7 @@ public class CookieBot {
     private WebhookClient importantHook;
 
     private WebhookClient getImportantWebhook() {
-        if(!config.getString("bot.importantHook").isPresent())
+        if (!config.getString("bot.importantHook").isPresent())
             return null;
         if (importantHook == null)
             importantHook = new WebhookClientBuilder(config.getString("bot.importantHook").get()).build();

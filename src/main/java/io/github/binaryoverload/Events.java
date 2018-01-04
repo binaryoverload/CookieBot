@@ -1,12 +1,11 @@
 package io.github.binaryoverload;
 
-import io.github.binaryoverload.commands.CommandType;
+import io.github.binaryoverload.util.Constants;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.events.DisconnectEvent;
 import net.dv8tion.jda.core.events.ReadyEvent;
 import net.dv8tion.jda.core.events.StatusChangeEvent;
-import net.dv8tion.jda.core.events.message.guild.GenericGuildMessageEvent;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 import okhttp3.Request;
@@ -14,7 +13,6 @@ import okhttp3.RequestBody;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import io.github.binaryoverload.commands.Command;
-import io.github.binaryoverload.permissions.PerGuildPermissions;
 import io.github.binaryoverload.util.GeneralUtils;
 import io.github.binaryoverload.util.MessageUtils;
 import io.github.binaryoverload.util.WebUtils;
@@ -47,7 +45,7 @@ public class Events extends ListenerAdapter {
     @Override
     public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
         String message = multiSpace.matcher(event.getMessage().getContentRaw()).replaceAll(" ");
-        if (message.startsWith(String.valueOf(CookieBot.getPrefixes().get(getGuildId(event))))) {
+        if (message.startsWith(String.valueOf(Constants.COMMAND_CHAR))) {
             List<Permission> perms = event.getChannel().getGuild().getSelfMember().getPermissions(event.getChannel());
             if (!perms.contains(Permission.ADMINISTRATOR)) {
                 if (!perms.contains(Permission.MESSAGE_WRITE)) {
@@ -70,7 +68,6 @@ public class Events extends ListenerAdapter {
             Command cmd = cookieBot.getCommand(command, event.getAuthor());
             if (cmd != null)
                 handleCommand(event, cmd, args);
-        } else {
         }
     }
 
@@ -101,8 +98,7 @@ public class Events extends ListenerAdapter {
     }
 
     private void handleCommand(GuildMessageReceivedEvent event, Command cmd, String[] args) {
-        if (cmd.getType() == CommandType.SECRET && !PerGuildPermissions.isCreator(event.getAuthor()) && !(cookieBot.isTestBot()
-                && PerGuildPermissions.isContributor(event.getAuthor()))) {
+        if (!cmd.getAuthority().hasPerm(event.getMember().getUser())) {
             GeneralUtils.sendImage("https://flarebot.stream/img/trap.jpg", "trap.jpg", event.getAuthor());
             return;
         }
@@ -132,10 +128,6 @@ public class Events extends ListenerAdapter {
         if (message.getTextChannel().getGuild().getSelfMember()
                 .getPermissions(message.getTextChannel()).contains(Permission.MESSAGE_MANAGE))
             message.delete().queue();
-    }
-
-    private String getGuildId(GenericGuildMessageEvent e) {
-        return e.getChannel().getGuild() != null ? e.getChannel().getGuild().getId() : null;
     }
 
 }

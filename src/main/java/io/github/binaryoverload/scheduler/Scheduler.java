@@ -1,6 +1,5 @@
 package io.github.binaryoverload.scheduler;
 
-import org.joda.time.Period;
 import io.github.binaryoverload.CookieBot;
 
 import java.util.HashMap;
@@ -42,11 +41,6 @@ public class Scheduler {
         tasks.put(taskName, timer.schedule(task, delay, TimeUnit.MILLISECONDS));
     }
 
-    public static void delayTask(FutureAction action) {
-        persistentTasks.put(action.toString() + System.currentTimeMillis(), timer.schedule(action::execute,
-                action.getExpires().getMillis(), TimeUnit.MILLISECONDS));
-    }
-
     public static boolean cancelTask(String taskName) {
         Iterator<Map.Entry<String, ScheduledFuture<?>>> i = tasks.entrySet().iterator();
         while (i.hasNext()) {
@@ -69,13 +63,4 @@ public class Scheduler {
         return persistentTasks;
     }
 
-    public static void queueFutureAction(long guuildId, long channelId, long responsible, long target, String reason,
-                                         Period delay, FutureAction.Action action) {
-        new FutureAction(guuildId, channelId, responsible, target, reason, delay, action).queue();
-    }
-
-    public static void queueFutureAction(long guuildId, long channelId, long responsible, String reason,
-                                         Period delay, FutureAction.Action action) {
-        new FutureAction(guuildId, channelId, responsible, reason, delay, action).queue();
-    }
 }

@@ -1,14 +1,13 @@
 package io.github.binaryoverload.commands.secret;
 
-import io.github.binaryoverload.commands.CommandType;
+import io.github.binaryoverload.commands.Command;
+import io.github.binaryoverload.commands.CommandAuthority;
 import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.User;
-import io.github.binaryoverload.commands.Command;
-import stream.flarebot.flarebot.objects.GuildWrapper;
 
 import java.io.File;
 
@@ -35,12 +34,7 @@ public class LogsCommand implements Command {
     }
 
     @Override
-    public CommandType getType() {
-        return CommandType.SECRET;
-    }
-
-    @Override
-    public boolean isDefaultPermission() {
-        return false;
+    public CommandAuthority getAuthority() {
+        return CommandAuthority.ADMIN;
     }
 }

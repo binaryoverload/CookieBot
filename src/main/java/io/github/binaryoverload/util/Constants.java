@@ -10,4 +10,5 @@ public class Constants {
     public static final long STAFF_ID = 320327762881675264L;
 
     public static final String FLARE_TEST_BOT_CHANNEL = "242297848123621376";
+    public static final char COMMAND_CHAR = '_';
 }

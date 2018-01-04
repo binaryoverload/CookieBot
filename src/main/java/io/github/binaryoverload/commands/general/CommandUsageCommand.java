@@ -2,7 +2,6 @@ package io.github.binaryoverload.commands.general;
 
 import io.github.binaryoverload.CookieBot;
 import io.github.binaryoverload.commands.Command;
-import io.github.binaryoverload.commands.CommandType;
 import io.github.binaryoverload.permissions.PerGuildPermissions;
 import io.github.binaryoverload.util.MessageUtils;
 import net.dv8tion.jda.core.entities.Guild;

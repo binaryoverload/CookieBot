@@ -1,6 +1,5 @@
 package io.github.binaryoverload.commands.general;
 
-import io.github.binaryoverload.commands.CommandType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDAInfo;
 import net.dv8tion.jda.core.entities.Guild;

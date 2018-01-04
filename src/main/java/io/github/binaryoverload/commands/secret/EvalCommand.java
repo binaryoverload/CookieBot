@@ -3,19 +3,18 @@ package io.github.binaryoverload.commands.secret;
 import com.datastax.driver.core.PreparedStatement;
 import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Row;
-import io.github.binaryoverload.commands.CommandType;
+import io.github.binaryoverload.CookieBot;
+import io.github.binaryoverload.commands.Command;
+import io.github.binaryoverload.commands.CommandAuthority;
 import io.github.binaryoverload.database.CassandraController;
+import io.github.binaryoverload.util.MessageUtils;
+import io.github.binaryoverload.util.errorhandling.Markers;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.User;
 import org.apache.commons.codec.binary.StringUtils;
-import io.github.binaryoverload.CookieBot;
-import io.github.binaryoverload.commands.Command;
-import stream.flarebot.flarebot.objects.GuildWrapper;
-import io.github.binaryoverload.util.MessageUtils;
-import io.github.binaryoverload.util.errorhandling.Markers;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
@@ -173,8 +172,8 @@ public class EvalCommand implements Command {
     }
 
     @Override
-    public CommandType getType() {
-        return CommandType.SECRET;
+    public CommandAuthority getAuthority() {
+        return CommandAuthority.ADMIN;
     }
 
     enum Options {

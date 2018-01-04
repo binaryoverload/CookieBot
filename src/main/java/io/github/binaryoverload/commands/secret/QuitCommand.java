@@ -2,19 +2,18 @@ package io.github.binaryoverload.commands.secret;
 
 import io.github.binaryoverload.CookieBot;
 import io.github.binaryoverload.commands.Command;
-import io.github.binaryoverload.commands.CommandType;
+import io.github.binaryoverload.commands.CommandAuthority;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.User;
-import stream.flarebot.flarebot.objects.GuildWrapper;
 
 public class QuitCommand implements Command {
 
     @Override
     public void onCommand(User sender, Guild guild, TextChannel channel, Message message, String[] args, Member member) {
-        CookieBot.getInstance().quit(false);
+        CookieBot.getInstance().quit();
     }
 
     @Override
@@ -33,12 +32,8 @@ public class QuitCommand implements Command {
     }
 
     @Override
-    public CommandType getType() {
-        return CommandType.SECRET;
+    public CommandAuthority getAuthority() {
+        return CommandAuthority.ADMIN;
     }
 
-    @Override
-    public boolean isDefaultPermission() {
-        return false;
-    }
 }
